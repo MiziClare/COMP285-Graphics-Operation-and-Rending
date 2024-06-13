@@ -1,0 +1,96 @@
+我需要完成一个关于Java和JUnit的项目，需要你的帮助来共同完成。这项任务的目标是以Test Driven的风格完成对一组形状类的部分实现的测试
+（使用JUnit4进行单元测试的Java编程）。目前项目内所有的文件代码都可能残缺或存在bug，我们不但需要针对每个java文件
+进行补全或修改，还需要遵从测试原则对shapes包中的四个java文件写出对应的测试文件（*Test.java）以测试所有情况。
+Each shape class must implement ALL the interface defined IShape.java.
+
+该项目的src文件夹内的结构如下：
+    src
+    │
+    └───uk
+        └───ac
+            └───liv
+                └───comp285
+                    └───cw1
+                        │   Canvas.java
+                        │   CanvasFrame.java
+                        │   IShape.java
+                        │   PanelCanvas.java
+                        │   Shape.java
+                        │
+                        ├───shapes
+                        │       Circle.java
+                        │       Point.java
+                        │       Rectangle.java
+                        │       RegularPolygon.java
+                        │
+                        └───test
+                                Main.java
+
+注：
+Point:			Represents a point in 2-D
+Shape:			(abstract base class for all other shape classes)
+Rectangle:		Represents a rectangle
+Circle:			Represents a circle
+RegularPolygon:	Represents a regular polygon
+Main:       	Entry point for the code, also has a rendering function which enables the shapes to be drawn using Java 2D.
+
+
+具体任务描述：
+You will need to finish/correct this implementation and testing framework. 
+You are also expected to use test driven development to add a new class which will represent a regular polygon.
+All tests should succeed and all classes should be functioning well.
+Each shape class must implement ALL the interface defined IShape.java, familiarise yourself with this source file. This contains comments explaining the required functionality for each shape.
+The above classes have already been implemented but some only partially (there is code to add) and some contain bugs. You should have a Junit test class for each of the tested classes.
+The project need to use Junit to test the functionality of ALL the public methods of the classes mentioned in shapes.
+
+Canvas.java，CanvasFrame.java，IShape.java，PanelCanvas.java，Shape.java
+Point.java，Circle.java，Rectangle.java，RegularPolygon.java
+
+
+对于Circle.java，参照Shape.java，需要为Circle也补上旋转和缩放函数.
+1.由于是圆形，因此对于旋转只需要考虑其圆心的旋转即可，使用旋转矩阵可简单地完成。
+2.对于缩放，只需要考虑缩放它的半径。
+
+
+
+
+点的旋转代码：
+// 使用atan2(a, b)函数
+public Point rotate(Point origin, double angle) {
+    if (origin == null || angle == 0) return this;  // 若无中心点或旋转角度为0，则直接返回当前点
+
+    // 计算相对旋转中心的坐标
+    float relativeX = this.x - origin.getX();
+    float relativeY = this.y - origin.getY();
+
+    // 计算极坐标的角度和半径
+    double radius = Math.sqrt(relativeX * relativeX + relativeY * relativeY);
+    double initialAngle = Math.atan2(relativeY, relativeX);
+
+    // 添加旋转角度
+    double newAngle = initialAngle + angle;
+
+    // 计算新的坐标
+    float rotatedX = (float) (radius * Math.cos(newAngle));
+    float rotatedY = (float) (radius * Math.sin(newAngle));
+
+    // 将新的坐标转换回全局坐标
+    return new Point(rotatedX + origin.getX(), rotatedY + origin.getY());
+}
+
+// 使用旋转矩阵
+public Point rotate(Point origin, double angle) {
+        // Check if the origin or angle doesn't necessitate a rotation
+        if (origin == null || angle == 0) return this;
+
+        // Translate point to origin
+        Point relativePoint = subtract(origin);
+
+        // Calculate the new x and y coordinates using rotation matrix
+        float newX = (float)(relativePoint.getX() * Math.cos(angle) - relativePoint.getY() * Math.sin(angle));
+        float newY = (float)(relativePoint.getX() * Math.sin(angle) + relativePoint.getY() * Math.cos(angle));
+
+        // Translate point back
+        Point rotatedPoint = new Point(newX, newY);
+        return rotatedPoint.add(origin);
+    }
